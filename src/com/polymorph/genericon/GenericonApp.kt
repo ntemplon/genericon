@@ -8,6 +8,5 @@ class GenericonApp: App(TestView::class) {
 }
 
 fun main(args: Array<String>) {
-    println("Hello World")
     Application.launch(GenericonApp::class.java, *args)
 }
