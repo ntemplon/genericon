@@ -9,5 +9,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="KotlinJavaRuntime" level="project" />
     <orderEntry type="library" exported="" name="no.tornado:tornadofx:1.7.14" level="project" />
+    <orderEntry type="library" exported="" name="com.google.code.gson:gson:2.8.2" level="project" />
   </component>
 </module>
