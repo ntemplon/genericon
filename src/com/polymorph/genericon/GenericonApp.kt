@@ -1,5 +1,6 @@
 package com.polymorph.genericon
 
+import com.polymorph.genericon.ui.TestView
 import javafx.application.Application
 import tornadofx.*
 

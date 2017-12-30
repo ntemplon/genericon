@@ -18,12 +18,4 @@ class Character(
     // TODO: Remove constants
     val baseAttackBonus: Int = 4
 
-
-    fun attackUsing(weapon: Weapon): Attack {
-        val toHit = DieRoll.constant(baseAttackBonus + attributes.strength.modifier) + weapon.toHitModifier
-        val damage = weapon.damage + attributes.strength.modifier
-
-        return Attack(toHit,  damage, weapon.critPredicate, weapon.critDamage)
-    }
-
 }

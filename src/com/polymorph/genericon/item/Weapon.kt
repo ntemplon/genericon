@@ -2,19 +2,21 @@ package com.polymorph.genericon.item
 
 import com.polymorph.genericon.character.SizeCategory
 import com.polymorph.genericon.math.DieRoll
+import com.polymorph.genericon.math.GameNumeric
 
 
 data class Weapon(
         val name: String,
         val sizeOfWeilder: SizeCategory,
-        val toHitModifier: DieRoll,
-        val damage: DieRoll,
+        val toHitModifier: GameNumeric,
+        val damage: GameNumeric,
         val critPredicate: (Int) -> Boolean,
-        val critDamage: (DieRoll) -> DieRoll,
+        val critDamage: (GameNumeric) -> GameNumeric,
+        val properties: List<WeaponProperty>,
         val type: WeaponType
 ) {
 
-    fun withProperty(property: (Weapon) -> Weapon): Weapon = property.invoke(this)
+    fun withProperty(property: WeaponProperty): Weapon = property.apply(this)
 
 }
 
@@ -22,10 +24,10 @@ data class Weapon(
 data class WeaponType(
         val name: String,
         val sizeOfWeilder: SizeCategory,
-        val toHitModifier: DieRoll,
-        val damage: DieRoll,
+        val toHitModifier: GameNumeric,
+        val damage: GameNumeric,
         val critPredicate: (Int) -> Boolean,
-        val critDamage: (DieRoll) -> DieRoll,
+        val critDamage: (GameNumeric) -> GameNumeric,
         val category: WeaponCategory
 ) {
 
@@ -36,13 +38,14 @@ data class WeaponType(
             damage = this.damage,
             critPredicate = this.critPredicate,
             critDamage = this.critDamage,
+            properties = listOf(),
             type = this
     )
 
 }
 
 
-data class WeaponCategory(val name: String, val toHitModifier: DieRoll, val damageProgression: Map<SizeCategory, DieRoll>, val critPredicate: (Int) -> Boolean, val critDamage: (DieRoll) -> DieRoll) {
+data class WeaponCategory(val name: String, val toHitModifier: GameNumeric, val damageProgression: Map<SizeCategory, GameNumeric>, val critPredicate: (Int) -> Boolean, val critDamage: (GameNumeric) -> GameNumeric) {
 
     fun forSize(size: SizeCategory): WeaponType = WeaponType(
             name = "${this.name} (${size.name})",
@@ -132,10 +135,18 @@ object DamageProgression {
 }
 
 
-object WeaponProperties {
+class WeaponProperty(val name: String, private val applyFunction: (Weapon) -> Weapon, private val removeFunction: (Weapon) -> Weapon) {
 
-    val masterwork: (Weapon) -> Weapon = { weapon -> weapon.copy(
-            toHitModifier = weapon.toHitModifier + 1
-    ) }
+    fun apply(weapon: Weapon): Weapon {
+        val modifiedWeapon = applyFunction.invoke(weapon)
+        return modifiedWeapon.copy(properties = listOf(*modifiedWeapon.properties.toTypedArray(), this))
+    }
+
+    fun remove(weapon: Weapon): Weapon {
+        assert(weapon.properties.contains(this))
+
+        val modifiedWeapon = removeFunction.invoke(weapon)
+        return modifiedWeapon.copy(properties = modifiedWeapon.properties.filterNot { it == this })
+    }
 
 }
